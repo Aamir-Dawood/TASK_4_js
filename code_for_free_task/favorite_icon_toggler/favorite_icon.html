@@ -1,0 +1,271 @@
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>icon_toggler</title>
+    <style>
+        html, body {
+        height: 100%; /* Ensures html and body take full viewport height */
+        margin: 0;
+        padding: 0;
+    }
+        ul , li{
+            list-style: none;
+        }
+        .container {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .favorite-icon {
+            background-color: rgb(255, 255, 255);
+            border: none;
+            cursor: pointer;
+
+        }
+        .favorite-icon.filed{
+            color: #d22b2b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <ul class="item-list">
+        <h1>Supplies</h1>
+        <li>
+            <h4>button 1</h4>
+            <button class="favorite-icon" id="favoriteIcon1" >&#9825</button>
+        </li>
+        <li>
+            <h4>button2</h4>
+            <button class="favorite-icon" id="favoriteIcon2">&#9825</button>
+        </li>
+        <li>
+            <h4>button3</h4>
+            <button class="favorite-icon" id="favoriteIcon3">&#10084</button>
+        </li>
+    </ul>
+    </div>
+    <script src="./favorite_icon.js"></script>
+</body>
+</html>
+
+--->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favorite Icon Toggle</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 90%;
+        max-width: 500px;
+        padding: 30px;
+      }
+
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 2.2rem;
+      }
+
+      .item-list {
+        margin-top: 20px;
+      }
+
+      li {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.3s;
+      }
+
+      li:hover {
+        background-color: #f9f9f9;
+        border-radius: 8px;
+      }
+
+      li:last-child {
+        border-bottom: none;
+      }
+
+      h4 {
+        color: #34495e;
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+      }
+
+      .favorite-icon {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 28px;
+        transition: all 0.3s ease;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+      }
+
+      .favorite-icon:hover {
+        background-color: rgba(210, 43, 43, 0.1);
+      }
+
+      .favorite-icon.filled {
+        color: #d22b2b;
+        animation: pulse 0.5s;
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .instructions {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 30px;
+        border-left: 4px solid #3498db;
+      }
+
+      .instructions h3 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .instructions p {
+        color: #7f8c8d;
+        line-height: 1.5;
+      }
+
+      .code-snippet {
+        background-color: #2c3e50;
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        font-family: monospace;
+        overflow-x: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Supplies</h1>
+
+      <ul class="item-list">
+        <li>
+          <div>
+            <h4>Pencils</h4>
+            <p>Set of 12 colored pencils</p>
+          </div>
+          <button class="favorite-icon" id="favoriteIcon1">&#9825;</button>
+        </li>
+        <li>
+          <div>
+            <h4>Notebooks</h4>
+            <p>Pack of 3 lined notebooks</p>
+          </div>
+          <button class="favorite-icon" id="favoriteIcon2">&#9825;</button>
+        </li>
+        <li>
+          <div>
+            <h4>Markers</h4>
+            <p>Set of 10 fine-tip markers</p>
+          </div>
+          <button class="favorite-icon" id="favoriteIcon3">&#9825;</button>
+        </li>
+        <li>
+          <div>
+            <h4>Erasers</h4>
+            <p>Pack of 5 white erasers</p>
+          </div>
+          <button class="favorite-icon" id="favoriteIcon4">&#9825;</button>
+        </li>
+        <li>
+          <div>
+            <h4>Stapler</h4>
+            <p>Standard desktop stapler</p>
+          </div>
+          <button class="favorite-icon" id="favoriteIcon5">&#9825;</button>
+        </li>
+      </ul>
+
+      <div class="instructions">
+        <h3>How It Works</h3>
+        <p>
+          Click on any heart icon to toggle between outline and filled states:
+        </p>
+        <ul>
+          <li>&#9825; - Outline heart (not favorited)</li>
+          <li>&#10084; - Filled heart (favorited)</li>
+        </ul>
+
+        <div class="code-snippet">
+          // JavaScript logic:<br />
+          const buttons = document.querySelectorAll('.favorite-icon');<br />
+          buttons.forEach(btn => {<br />
+          &nbsp;&nbsp;btn.addEventListener('click', () => {<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;btn.classList.toggle('filled');<br />
+          &nbsp;&nbsp;&nbsp;&nbsp;btn.innerHTML =
+          btn.classList.contains('filled') ? '&#10084;' : '&#9825;';<br />
+          &nbsp;&nbsp;});<br />
+          });
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // JavaScript for the favorite icon toggle
+      document.addEventListener("DOMContentLoaded", function () {
+        const likebtns = document.querySelectorAll(".favorite-icon");
+
+        likebtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            btn.classList.toggle("filled");
+            // Toggle between outline heart and filled heart
+            btn.innerHTML = btn.classList.contains("filled")
+              ? "&#10084;"
+              : "&#9825;";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

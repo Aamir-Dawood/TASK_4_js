@@ -1,0 +1,318 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Animated background */
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    animation: gradientMove 15s ease infinite;
+    background: radial-gradient(
+        circle,
+        rgba(239, 119, 34, 1) 0%,
+        rgba(235, 235, 235, 1) 72%,
+        rgba(11, 166, 223, 1) 100%
+    );
+    background-size: 200% 200%;
+}
+
+.wave {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" fill="rgba(255,255,255,0.1)"></path></svg>');
+    background-size: 1200px 100px;
+    animation: wave 12s linear infinite;
+    z-index: -1;
+}
+
+.wave:nth-child(2) {
+    bottom: 10px;
+    animation: wave 10s linear infinite;
+    opacity: 0.5;
+    background-size: 1100px 100px;
+}
+
+.wave:nth-child(3) {
+    bottom: 20px;
+    animation: wave 8s linear infinite;
+    opacity: 0.3;
+    background-size: 1000px 100px;
+}
+
+.info {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    color: white;
+    z-index: -1;
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+        background-size: 150% 150%;
+    }
+    25% {
+        background-size: 180% 180%;
+    }
+    50% {
+        background-position: 100% 50%;
+        background-size: 200% 200%;
+    }
+    75% {
+        background-size: 180% 180%;
+    }
+    100% {
+        background-position: 0% 50%;
+        background-size: 150% 150%;
+    }
+}
+
+@keyframes wave {
+    0% {
+        background-position-x: 0;
+    }
+    100% {
+        background-position-x: 1200px;
+    }
+}
+
+/* Layout containers */
+.outer {
+    margin: 5% auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+.inner {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Form styles */
+.form {
+    width: 500px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+
+}
+.form-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+.form-group label {
+    font-weight: bold;
+    width: 150px;
+}
+.form-group input,
+.form-group select {
+    flex: 1;
+    padding: 8px;
+    font-size: 1em;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.form-action {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+}
+
+/* Validation styles */
+input.invalid,
+select.invalid {
+    border: 2px solid rgb(255, 45, 45);
+    background-color: #fcebeb;
+}
+input.valid,
+select.valid {
+    border: 2px solid rgb(45, 138, 45);
+    background-color: #F8FAFC;
+}
+
+/* Button styles */
+#submit, .edit-btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    background-color: #3396D3;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#submit:hover, .edit-btn:hover {
+    background-color: #2576a8;
+    transform: translateY(-2px);
+}
+#rst, .delete-btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: white;
+    background-color: darkgray;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+#rst:hover, .delete-btn:hover {
+    background: rgb(116, 116, 116);
+    transform: translateY(-2px);
+}
+
+/* Modern Table Styles */
+table {
+    width: 90%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 10px;
+    overflow: hidden;
+    backdrop-filter: blur(5px);
+}
+thead tr {
+    background: #3396D3;
+    color: #fff;
+    font-size: 1.1em;
+}
+th, td {
+    padding: 12px 18px;
+    border-bottom: 1px solid #e0e0e0;
+    text-align: center;
+}
+th {
+    font-weight: bold;
+    letter-spacing: 0.5px;
+}
+tbody tr {
+    transition: background 0.2s;
+}
+tbody tr:hover {
+    background: #f2f8fc;
+}
+tbody tr:last-child td {
+    border-bottom: none;
+}
+td {
+    font-size: 1em;
+    color: #333;
+}
+
+/* Modal dialog styles */
+#myModal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+#myModal .modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 2rem;
+    border: 1px solid #888;
+    border-radius: 8px;
+    width: 350px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    position: relative;
+    text-align: center;
+}
+#myModal .close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    position: absolute;
+    right: 16px;
+    top: 8px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+#myModal .close-btn:hover,
+#myModal .close-btn:focus {
+    color: #333;
+}
+#myModal .modal-content button {
+    margin-top: 1.5rem;
+    padding: 0.5rem 1.5rem;
+    background: #e74c3c;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#myModal .modal-content button:hover {
+    background: #c0392b;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+    .outer, .inner, table, .form {
+        margin-top: 10% !important;
+        width: 95% !important;
+        font-size: 1rem;
+    }
+    .form {
+        width: 95% !important;
+        padding: 15px;
+    }
+    .form-group, .form-action {
+        flex-direction: column;
+        width: 100%;
+    }
+    .form-group label {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    table th, table td {
+        padding: 0.5rem;
+        border-radius: 10px;
+    }
+    #myModal .modal-content {
+        width: 90vw;
+        margin: 30% auto;
+        padding: 1rem;
+    }
+    .info {
+        display: none;
+    }
+}
