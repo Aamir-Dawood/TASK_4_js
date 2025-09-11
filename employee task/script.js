@@ -1,19 +1,16 @@
 console.log("Script loaded");
 
-document.getElementById("table-body").addEventListener("click", function (e) {
-  const clickedElement = e.target;
-  if (clickedElement.classList.contains("edit-btn")) {
-    editRow(clickedElement);
-  } else if (clickedElement.classList.contains("delete-btn")) {
-    deleteRow(clickedElement);
-  }
-});
-
+const dataForm = document.getElementById("dataForm");
+const tableBody = document.getElementById("table-body");
+const showFormBtn = document.getElementById("showFormBtn");
+const resetBtn = document.getElementById("rst");
 let rowToDelete = null;
-let editingRow = null;
-let rowCounter = 1;
+let employees = [];
+let currentPage = 1;
+const rowsPerPage = 5;
+let editingIndex = null;
 
-// Generic function to show modal with dynamic content
+// Modal utility
 function showModal({ title, messages, buttonText, onButtonClick }) {
   const modal = document.getElementById("myModal");
   modal.style.display = "block";
@@ -29,30 +26,34 @@ function showModal({ title, messages, buttonText, onButtonClick }) {
   };
 }
 
-// Show modal dialog for delete confirmation
+// Delete row with confirmation
 function deleteRow(deleteButton) {
   const row = deleteButton.closest("tr");
   if (row) {
-    rowToDelete = row;
+    const index = parseInt(row.getAttribute('data-index'));
+    rowToDelete = index;
     showModal({
       title: "Warning",
       messages: "Do you really want to delete the entry?",
       buttonText: "Delete",
       onButtonClick: function() {
-        if (rowToDelete) rowToDelete.remove();
+        if (rowToDelete !== null) {
+          employees.splice(rowToDelete, 1);
+          if (employees.length % rowsPerPage === 0 && currentPage > 1) currentPage--;
+          renderTable();
+          renderPagination();
+        }
         rowToDelete = null;
       }
     });
   }
 }
 
-// Handle modal close (X button)
+// Modal close handlers
 document.querySelector("#myModal .close-btn").addEventListener("click", function() {
   document.getElementById("myModal").style.display = "none";
   rowToDelete = null;
 });
-
-// Optional: close modal when clicking outside modal content
 window.onclick = function(event) {
   const modal = document.getElementById("myModal");
   if (event.target === modal) {
@@ -61,61 +62,53 @@ window.onclick = function(event) {
   }
 };
 
-// Function to put a row into edit mode
+// Edit row
 function editRow(editButton) {
   const row = editButton.closest("tr");
-  const cells = row.querySelectorAll("td:not(:last-child)");
-  const rowData = {
-    EmpID: cells[0].textContent,
-    Name: cells[1].textContent,
-    DOB: cells[2].textContent,
-    Age: cells[3].textContent,
-    Course: cells[4].textContent,
-    Sal: cells[5].textContent,
-    rowId: row.getAttribute("data-rowid") || null
-  };
-  document.getElementById("EmpID").value = rowData.EmpID;
-  document.getElementById("Name").value = rowData.Name;
-  document.getElementById("DOB").value = rowData.DOB;
-  document.getElementById("Age").value = rowData.Age;
-  document.getElementById("course").value = rowData.Course;
-  document.getElementById("Sal").value = rowData.Sal;
-  editingRow = row;
+  const index = parseInt(row.getAttribute('data-index'));
+  const emp = employees[index];
+  document.getElementById("EmpID").value = emp.empID;
+  document.getElementById("Name").value = emp.name;
+  document.getElementById("DOB").value = emp.dob;
+  document.getElementById("Age").value = emp.age;
+  document.getElementById("course").value = emp.course;
+  document.getElementById("Sal").value = emp.salary;
+  editingIndex = index;
 }
 
-// Function to calculate age from date of birth
+// Age calculation
 function calculateAge(dob) {
   const birthDate = new Date(dob);
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const m = today.getMonth() - birthDate.getMonth();
-  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-    age--;
-  }
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
   return age;
 }
 
-// Format DOB for display
+// Format date for British locale
 function formatDateBritish(dateStr) {
   if (!dateStr) return "";
   const dateObj = new Date(dateStr);
-  return dateObj.toLocaleDateString("en-GB"); // e.g., "31/12/2025"
+  return dateObj.toLocaleDateString("en-GB");
 }
 
+// Form submit handler
 function formSubmit(event) {
   event.preventDefault();
   const errmsg = [];
 
   // Gather form values
-  const eEmpID = document.getElementById("EmpID").value;
-  const eName = document.getElementById("Name").value;
+  const eEmpID = document.getElementById("EmpID").value.trim();
+  const eName = document.getElementById("Name").value.trim();
   const eDOB = document.getElementById("DOB").value;
-  let eAge = document.getElementById("Age").value;
   const ecourse = document.getElementById("course").value;
-  const eSal = document.getElementById("Sal").value;
+  const eSal = document.getElementById("Sal").value.trim();
 
+  // Validation
   if (!eEmpID) errmsg.push("Emp ID");
   if (!eName) errmsg.push("Name");
+  let eAge = "";
   if (!eDOB) {
     errmsg.push("DOB");
   } else {
@@ -124,7 +117,7 @@ function formSubmit(event) {
     document.getElementById("Age").value = eAge;
   }
   if (!ecourse) errmsg.push("Course Name");
-  if (!eSal) errmsg.push("sal");
+  if (!eSal) errmsg.push("Salary");
 
   if (errmsg.length > 0) {
     showModal({
@@ -135,24 +128,13 @@ function formSubmit(event) {
     return;
   }
 
-  // Prevent duplicate EmpID and redundant Name+DOB
-  const tablebody = document.getElementById("table-body");
-  const rows = tablebody.querySelectorAll("tr");
+  // Duplicate checks
   let isDuplicateEmpID = false;
   let isRedundantNameDOB = false;
-  rows.forEach(row => {
-    // If editing, skip the current row being edited
-    if (editingRow && row === editingRow) return;
-    const cells = row.querySelectorAll("td");
-    if (cells[0] && cells[0].textContent === eEmpID) {
-      isDuplicateEmpID = true;
-    }
-    if (
-      cells[1] && cells[1].textContent === eName &&
-      cells[2] && cells[2].textContent === eDOB
-    ) {
-      isRedundantNameDOB = true;
-    }
+  employees.forEach((emp, index) => {
+    if (editingIndex !== null && index === editingIndex) return;
+    if (emp.empID === eEmpID) isDuplicateEmpID = true;
+    if (emp.name === eName && emp.dob === eDOB) isRedundantNameDOB = true;
   });
   if (isDuplicateEmpID) {
     showModal({
@@ -174,50 +156,156 @@ function formSubmit(event) {
   // Format DOB for display
   const formattedDOB = formatDateBritish(eDOB);
 
-  if (editingRow) {
-    const cells = editingRow.querySelectorAll("td:not(:last-child)");
-    cells[0].textContent = eEmpID;
-    cells[1].textContent = eName;
-    cells[2].textContent = formattedDOB; // Use formatted date
-    cells[3].textContent = eAge;
-    cells[4].textContent = ecourse;
-    cells[5].textContent = eSal;
-    editingRow = null;
-  } else {
-    const newrow = document.createElement("tr");
-    const rowId = rowCounter++;
-    const rowData = {
-      EmpID: eEmpID,
-      Name: eName,
-      DOB: formattedDOB, // Use formatted date
-      Age: eAge,
-      Course: ecourse,
-      Sal: eSal,
-      rowId: rowId
+  if (editingIndex !== null) {
+    employees[editingIndex] = {
+      empID: eEmpID,
+      name: eName,
+      dob: eDOB,
+      age: eAge,
+      course: ecourse,
+      salary: eSal
     };
-
-    newrow.setAttribute("data-rowid", rowId);
-    Object.keys(rowData).forEach((key) => {
-      if (key !== "rowId") {
-        const cell = document.createElement("td");
-        cell.textContent = rowData[key];
-        newrow.appendChild(cell);
-      }
+    editingIndex = null;
+  } else {
+    employees.push({
+      empID: eEmpID,
+      name: eName,
+      dob: eDOB,
+      age: eAge,
+      course: ecourse,
+      salary: eSal
     });
-    const actionCell = document.createElement("td");
-    actionCell.innerHTML = `
-      <button class="edit-btn">Edit</button>
-      <button class="delete-btn">Delete</button>
-    `;
-    newrow.appendChild(actionCell);
-    tablebody.appendChild(newrow);
   }
+  renderTable();
+  renderPagination();
+  dataForm.reset();
 }
 
-document.getElementById("dataForm").addEventListener("submit", formSubmit);
+// Render table for current page
+function renderTable() {
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageData = employees.slice(start, end);
+  tableBody.innerHTML = '';
+  pageData.forEach((emp, index) => {
+    const row = document.createElement('tr');
+    row.setAttribute('data-index', start + index);
+    [emp.empID, emp.name, formatDateBritish(emp.dob), emp.age, emp.course, emp.salary].forEach(val => {
+      const cell = document.createElement('td');
+      cell.textContent = val;
+      row.appendChild(cell);
+    });
+    const actionCell = document.createElement('td');
+    actionCell.className = 'action-buttons';
+    actionCell.innerHTML = `<button class="edit-btn">Edit</button><button class="delete-btn">Delete</button>`;
+    row.appendChild(actionCell);
+    tableBody.appendChild(row);
+  });
+}
 
-// Add this outside formSubmit, after DOM is loaded
-document.getElementById("rst").addEventListener("click", function() {
-  document.getElementById("dataForm").reset();
-  editingRow = null; // Cancel edit mode so the same row can't be resubmitted
+// Render pagination controls
+function renderPagination() {
+  const totalPages = Math.ceil(employees.length / rowsPerPage);
+  const pagination = document.getElementById('pagination-controls');
+  pagination.innerHTML = '';
+  if (totalPages <= 1) return;
+
+  // Previous button
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = 'Previous';
+  prevBtn.disabled = currentPage === 1;
+  prevBtn.onclick = () => { currentPage--; renderTable(); renderPagination(); };
+  pagination.appendChild(prevBtn);
+
+  // Page numbers
+  for (let i = 1; i <= totalPages; i++) {
+    const btn = document.createElement('button');
+    btn.textContent = i;
+    btn.classList.toggle('active', i === currentPage);
+    btn.onclick = () => { currentPage = i; renderTable(); renderPagination(); };
+    pagination.appendChild(btn);
+  }
+
+  // Next button
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = 'Next';
+  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.onclick = () => { currentPage++; renderTable(); renderPagination(); };
+  pagination.appendChild(nextBtn);
+}
+
+// Table row action handler
+tableBody.addEventListener("click", function (e) {
+  const clickedElement = e.target;
+  if (clickedElement.classList.contains("edit-btn")) {
+    editRow(clickedElement);
+  } else if (clickedElement.classList.contains("delete-btn")) {
+    deleteRow(clickedElement);
+  }
+});
+
+
+// Form show/hide with turn transition
+// Form show/hide with turn transition and table movement
+function hideForm() {
+    const formContainer = document.querySelector('.form-container');
+    const tableContainer = document.querySelector('.table-container');
+    
+    dataForm.classList.add('hidden');
+    dataForm.classList.remove('visible');
+    
+    // Collapse form container after form animation
+    setTimeout(() => {
+        formContainer.classList.add('collapsed');
+        tableContainer.classList.add('raised');
+    }, 200); // Halfway through form animation
+}
+
+function showForm() {
+    const formContainer = document.querySelector('.form-container');
+    const tableContainer = document.querySelector('.table-container');
+    
+    // Expand form container first
+    formContainer.classList.remove('collapsed');
+    tableContainer.classList.remove('raised');
+    
+    // Then show form after a short delay
+    setTimeout(() => {
+        dataForm.classList.remove('hidden');
+        dataForm.classList.add('visible');
+        tableContainer.classList.remove('raised');
+    }, 50);
+}
+
+showFormBtn.addEventListener("click", () => {
+    if (dataForm.classList.contains('hidden') || getComputedStyle(dataForm).opacity === '0') {
+        showForm();
+        showFormBtn.textContent = "Hide Employee Form";
+    } else {
+        hideForm();
+        showFormBtn.textContent = "Show Employee Form";
+    }
+});
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const formContainer = document.querySelector('.form-container');
+    const tableContainer = document.querySelector('.table-container');
+
+    dataForm.classList.add('hidden');
+   setTimeout(() => {
+        formContainer.classList.add('collapsed');
+        tableContainer.classList.add('raised');
+    }, 10);
+    renderTable();
+    renderPagination();
+});
+
+// Form submit event
+dataForm.addEventListener("submit", formSubmit);
+
+// Reset button handler
+resetBtn.addEventListener("click", function() {
+  dataForm.reset();
+  editingIndex = null;
 });
