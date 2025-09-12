@@ -1,5 +1,3 @@
-console.log("Script loaded");
-
 const dataForm = document.getElementById("dataForm");
 const tableBody = document.getElementById("table-body");
 const showFormBtn = document.getElementById("showFormBtn");
@@ -7,7 +5,7 @@ const resetBtn = document.getElementById("rst");
 let rowToDelete = null;
 let employees = [];
 let currentPage = 1;
-const rowsPerPage = 5;
+const rowsPerPage = 3;
 let editingIndex = null;
 
 // Modal utility
@@ -178,7 +176,8 @@ function formSubmit(event) {
   }
   renderTable();
   renderPagination();
-  dataForm.reset();
+  // Removed automatic reset to allow manual reset by user
+  // dataForm.reset();
 }
 
 // Render table for current page
@@ -250,31 +249,34 @@ tableBody.addEventListener("click", function (e) {
 function hideForm() {
     const formContainer = document.querySelector('.form-container');
     const tableContainer = document.querySelector('.table-container');
-    
+
     dataForm.classList.add('hidden');
     dataForm.classList.remove('visible');
-    
-    // Collapse form container after form animation
+
+    // Collapse form container after form animation completes (adjusted timing)
     setTimeout(() => {
         formContainer.classList.add('collapsed');
         tableContainer.classList.add('raised');
-    }, 200); // Halfway through form animation
+    }, 600); // Increased delay to allow form vanish animation to complete
 }
 
 function showForm() {
     const formContainer = document.querySelector('.form-container');
     const tableContainer = document.querySelector('.table-container');
-    
+
     // Expand form container first
     formContainer.classList.remove('collapsed');
-    tableContainer.classList.remove('raised');
-    
+
+    // Remove raised class from table container after form container expanded
+    setTimeout(() => {
+        tableContainer.classList.remove('raised');
+    }, 300); // Delay to sync with form container expansion
+
     // Then show form after a short delay
     setTimeout(() => {
         dataForm.classList.remove('hidden');
         dataForm.classList.add('visible');
-        tableContainer.classList.remove('raised');
-    }, 50);
+    }, 350);
 }
 
 showFormBtn.addEventListener("click", () => {
