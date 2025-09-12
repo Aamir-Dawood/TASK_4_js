@@ -46,6 +46,7 @@ function deleteRow(deleteButton) {
   if (row) {
     const index = parseInt(row.getAttribute('data-index'));
     rowToDelete = index;
+    closeFormModal();
     showModal({
       title: "Warning",
       messages: "Do you really want to delete the entry?",
@@ -71,15 +72,24 @@ document.querySelectorAll(".close-btn").forEach(function(btn) {
     rowToDelete = null;
     if (modal.id === "formModal") {
       editingIndex = null;
+      dataForm.reset();
+    }
+    else{
+      rowToDelete = null;
     }
   });
 });
 
 window.onclick = function(event) {
   const modal = document.getElementById("myModal");
+  const formModal = document.getElementById("formModal");
   if (event.target === modal) {
     modal.style.display = "none";
     rowToDelete = null;
+  }
+  if (event.target === formModal) {
+    formModal.style.display = "none";
+    editingIndex = null;
   }
 };
 
@@ -95,6 +105,7 @@ function editRow(editButton) {
   document.getElementById("course").value = emp.course;
   document.getElementById("Sal").value = emp.salary;
   editingIndex = index;
+  openFormModal();
 }
 
 // Age calculation
@@ -141,6 +152,7 @@ function formSubmit(event) {
   if (!eSal) errmsg.push("Salary");
 
   if (errmsg.length > 0) {
+    closeFormModal();
     showModal({
       title: "Validation Error",
       messages: errmsg,
@@ -158,6 +170,7 @@ function formSubmit(event) {
     if (emp.name === eName && emp.dob === eDOB) isRedundantNameDOB = true;
   });
   if (isDuplicateEmpID) {
+    closeFormModal();
     showModal({
       title: "Duplicate EmpID",
       messages: ["This EmpID already exists in the table."],
@@ -166,6 +179,7 @@ function formSubmit(event) {
     return;
   }
   if (isRedundantNameDOB) {
+    closeFormModal();
     showModal({
       title: "Redundant Entry",
       messages: ["An entry with the same Name and DOB already exists."],
@@ -197,6 +211,7 @@ function formSubmit(event) {
       salary: eSal
     });
   }
+  closeFormModal();
   renderTable();
   renderPagination();
   // Removed automatic reset to allow manual reset by user
