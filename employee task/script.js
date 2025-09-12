@@ -2,6 +2,7 @@ const dataForm = document.getElementById("dataForm");
 const tableBody = document.getElementById("table-body");
 const showFormBtn = document.getElementById("showFormBtn");
 const resetBtn = document.getElementById("rst");
+const formModal = document.getElementById("formModal");
 let rowToDelete = null;
 let employees = [];
 let currentPage = 1;
@@ -22,6 +23,21 @@ function showModal({ title, messages, buttonText, onButtonClick }) {
     modal.style.display = "none";
     if (onButtonClick) onButtonClick();
   };
+}
+
+// Form Modal control functions
+function openFormModal(){
+  formModal.style.display='block';
+
+  // Reset form when opening for new entry
+  if(editingIndex == null) {
+    dataForm.reset();
+  }
+}
+
+function closeFormModal(){
+  formModal.style.display='none';
+  editingIndex = null;
 }
 
 // Delete row with confirmation
@@ -48,10 +64,17 @@ function deleteRow(deleteButton) {
 }
 
 // Modal close handlers
-document.querySelector("#myModal .close-btn").addEventListener("click", function() {
-  document.getElementById("myModal").style.display = "none";
-  rowToDelete = null;
+document.querySelectorAll(".close-btn").forEach(function(btn) {
+  btn.addEventListener("click", function() {
+    const modal = this.closest(".modal");
+    modal.style.display = "none";
+    rowToDelete = null;
+    if (modal.id === "formModal") {
+      editingIndex = null;
+    }
+  });
 });
+
 window.onclick = function(event) {
   const modal = document.getElementById("myModal");
   if (event.target === modal) {
@@ -152,7 +175,7 @@ function formSubmit(event) {
   }
 
   // Format DOB for display
-  const formattedDOB = formatDateBritish(eDOB);
+  // const formattedDOB = formatDateBritish(eDOB);
 
   if (editingIndex !== null) {
     employees[editingIndex] = {
@@ -244,61 +267,19 @@ tableBody.addEventListener("click", function (e) {
 });
 
 
-// Form show/hide with turn transition
-// Form show/hide with turn transition and table movement
-function hideForm() {
-    const formContainer = document.querySelector('.form-container');
-    const tableContainer = document.querySelector('.table-container');
-
-    dataForm.classList.add('hidden');
-    dataForm.classList.remove('visible');
-
-    // Collapse form container after form animation completes (adjusted timing)
-    setTimeout(() => {
-        formContainer.classList.add('collapsed');
-        tableContainer.classList.add('raised');
-    }, 600); // Increased delay to allow form vanish animation to complete
-}
-
-function showForm() {
-    const formContainer = document.querySelector('.form-container');
-    const tableContainer = document.querySelector('.table-container');
-
-    // Expand form container first
-    formContainer.classList.remove('collapsed');
-
-    // Remove raised class from table container after form container expanded
-    setTimeout(() => {
-        tableContainer.classList.remove('raised');
-    }, 300); // Delay to sync with form container expansion
-
-    // Then show form after a short delay
-    setTimeout(() => {
-        dataForm.classList.remove('hidden');
-        dataForm.classList.add('visible');
-    }, 350);
-}
-
-showFormBtn.addEventListener("click", () => {
-    if (dataForm.classList.contains('hidden') || getComputedStyle(dataForm).opacity === '0') {
-        showForm();
-        showFormBtn.textContent = "Hide Employee Form";
-    } else {
-        hideForm();
-        showFormBtn.textContent = "Show Employee Form";
-    }
-});
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    const formContainer = document.querySelector('.form-container');
+    const formModal = document.getElementById('formModal');
     const tableContainer = document.querySelector('.table-container');
 
-    dataForm.classList.add('hidden');
-   setTimeout(() => {
-        formContainer.classList.add('collapsed');
+    // Initially hide the form modal
+    formModal.style.display = 'none';
+
+    // Add raised class to table container after delay for animation
+    setTimeout(() => {
         tableContainer.classList.add('raised');
-    }, 10);
+    }, 600); // Adjusted delay for smoother animation
     renderTable();
     renderPagination();
 });
@@ -311,3 +292,6 @@ resetBtn.addEventListener("click", function() {
   dataForm.reset();
   editingIndex = null;
 });
+
+// Show form button handler
+showFormBtn.addEventListener("click", openFormModal);

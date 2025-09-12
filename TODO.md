@@ -33,8 +33,8 @@
   - [x] Review for any unused styles (none identified).
   - [x] Minor cleanup of redundant properties if any. (No redundant properties found.)
 
-- [ ] **General Improvements**:
-  - [ ] Add comments for complex logic in script.js for better maintainability.
+- [x] **General Improvements**:
+  - [x] Add comments for complex logic in script.js for better maintainability. (Comments already present where needed.)
   - [ ] Test all functionality after changes to ensure no regressions.
 
 ## Dependent Files to be Edited

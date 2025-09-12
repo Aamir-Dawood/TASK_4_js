@@ -115,13 +115,6 @@ body {
     align-items: center;
 }
 
-/* Form container for 3D perspective */
-.form-container {
-    perspective: 1000px;
-    margin: 20px 0;
-    width: 500px;
-}
-
 /* Form styles with turn transition */
 #showFormBtn {
     padding: 12px 24px;
@@ -139,6 +132,7 @@ body {
 }
 #showFormBtn:hover {
     background: #2576a8;
+    transform: translateY(-2px);
 }
 
 .form {
@@ -147,28 +141,7 @@ body {
     background: rgba(255, 255, 255, 0.9);
     padding: 25px;
     border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(5px);
-    transform-style: preserve-3d;
-    transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
-    transform: rotateY(0deg);
-    opacity: 1;
-}
-
-.form.hidden {
-    transform: rotateY(90deg);
-    opacity: 0;
-    pointer-events: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.form.visible {
-    transform: rotateY(0deg);
-    opacity: 1;
-    pointer-events: auto;
-    position: relative;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
@@ -288,9 +261,8 @@ td {
     font-size: 1em;
     color: #333;
 }
-
-/* Modal dialog styles */
-#myModal {
+/* Modal styles */
+.modal {
     display: none;
     position: fixed;
     z-index: 1000;
@@ -299,11 +271,18 @@ td {
     width: 100vw;
     height: 100vh;
     overflow: auto;
-    background: rgba(0, 0, 0, 0.4);
+    background: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.3s;
 }
-#myModal .modal-content {
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
     background: #fff;
-    margin: 10% auto;
+    margin: 5% auto;
     padding: 2rem;
     border: 1px solid #888;
     border-radius: 8px;
@@ -311,8 +290,37 @@ td {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     position: relative;
     text-align: center;
+    animation: slideIn 0.3s;
 }
-#myModal .close-btn {
+
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* Form Modal specific styles */
+.form-modal {
+    width: 500px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.form-modal h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Ensure form fits well in modal */
+.form-modal .form {
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
+}
+
+.modal .close-btn {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -323,11 +331,11 @@ td {
     cursor: pointer;
     transition: color 0.2s;
 }
-#myModal .close-btn:hover,
-#myModal .close-btn:focus {
+.modal .close-btn:hover,
+.modal .close-btn:focus {
     color: #333;
 }
-#myModal .modal-content button {
+.modal-content button {
     margin-top: 1.5rem;
     padding: 0.5rem 1.5rem;
     background: #e74c3c;
@@ -338,8 +346,11 @@ td {
     cursor: pointer;
     transition: background 0.2s;
 }
-#myModal .modal-content button:hover {
+.modal-content button:hover {
     background: #c0392b;
+}
+#formModal {
+  backdrop-filter: blur(5px);
 }
 
 /* Pagination styles */
@@ -381,25 +392,21 @@ td {
 @media (max-width: 600px) {
     .outer,
     .inner,
-    table,
-    .form-container {
+    table {
         margin-top: 10% !important;
         width: 95% !important;
         font-size: 1rem;
     }
-    .form-container {
+    .form-modal {
         width: 95% !important;
+        padding: 1rem;
     }
-    .form {
-        width: 100% !important;
-        padding: 15px;
-    }
-    .form-group,
-    .form-action {
+    .form-modal .form-group,
+    .form-modal .form-action {
         flex-direction: column;
         width: 100%;
     }
-    .form-group label {
+    .form-modal .form-group label {
         width: 100%;
         margin-bottom: 5px;
     }
@@ -408,9 +415,9 @@ td {
         padding: 0.5rem;
         border-radius: 10px;
     }
-    #myModal .modal-content {
+    .modal-content {
         width: 90vw;
-        margin: 30% auto;
+        margin: 20% auto;
         padding: 1rem;
     }
     .info {
@@ -418,7 +425,8 @@ td {
     }
     
     /* Adjust turn animation for mobile */
-    .form {
-        transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+    .action-buttons {
+        flex-direction: column;
+        gap: 8px;
     }
 }

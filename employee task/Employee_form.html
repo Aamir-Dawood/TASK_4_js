@@ -18,57 +18,6 @@
     <div class="outer">
       <div class="inner">
         <button id="showFormBtn">Employee Form</button>
-        <div class="form-container">
-          <form id="dataForm" class="form">
-            <div class="form-group">
-              <label for="EmpID">Employee ID </label>
-              <input type="text" id="EmpID" name="empID" required />
-            </div>
-            <div class="form-group">
-              <label for="name">Name</label>
-              <input
-                type="text"
-                pattern="[A-Za-z]+"
-                title="Name should not Contain Numbers"
-                id="Name"
-                name="name"
-              />
-            </div>
-            <div class="form-group">
-              <label for="dob">DOB</label>
-              <input type="date" id="DOB" name="dob" />
-            </div>
-            <div class="form-group">
-              <label for="age">AGE</label>
-              <input
-                type="number"
-                min="1"
-                max="100"
-                id="Age"
-                name="age"
-                readonly
-              />
-            </div>
-            <div class="form-group">
-              <label for="course">Course</label>
-              <select name="course" id="course">
-                <option value="" disabled selected>Select the Degree</option>
-                <option value="B.Tech">B.Tech</option>
-                <option value="B.E">B.E</option>
-                <option value="B.Sc">B.Sc</option>
-                <option value="M.Sc">M.Sc</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="sal">Salary</label>
-              <input type="number" min="0" max="999999" id="Sal" name="sal" />
-            </div>
-            <div class="form-action">
-              <input type="submit" id="submit" value="Submit" />
-              <input type="reset" id="rst" value="Reset" />
-            </div>
-          </form>
-        </div>
       </div>
       <div class="table-container">
         <table>
@@ -95,6 +44,66 @@
         <h2></h2>
         <p></p>
         <button></button>
+      </div>
+    </div>
+
+    <div id="formModal" class="modal mui-modal">
+      <div class="modal-content form-modal mui-modal-content">
+        <header class="mui-modal-header">
+          <h2 class="mui-modal-title">Employee Details</h2>
+          <button class="close-btn mui-close-btn" aria-label="Close">&times;</button>
+        </header>
+        <form id="dataForm" class="form mui-form">
+          <div class="form-group mui-form-group">
+            <label for="EmpID" class="mui-label">Employee ID</label>
+            <input type="text" id="EmpID" name="empID" required class="mui-input" />
+          </div>
+          <div class="form-group mui-form-group">
+            <label for="name" class="mui-label">Name</label>
+            <input
+              type="text"
+              pattern="[A-Za-z]+"
+              title="Name should not Contain Numbers"
+              id="Name"
+              name="name"
+              class="mui-input"
+            />
+          </div>
+          <div class="form-group mui-form-group">
+            <label for="dob" class="mui-label">DOB</label>
+            <input type="date" id="DOB" name="dob" class="mui-input" />
+          </div>
+          <div class="form-group mui-form-group">
+            <label for="age" class="mui-label">AGE</label>
+            <input
+              type="number"
+              min="1"
+              max="100"
+              id="Age"
+              name="age"
+              readonly
+              class="mui-input"
+            />
+          </div>
+          <div class="form-group mui-form-group">
+            <label for="course" class="mui-label">Course</label>
+            <select name="course" id="course" class="mui-select">
+              <option value="" disabled selected>Select the Degree</option>
+              <option value="B.Tech">B.Tech</option>
+              <option value="B.E">B.E</option>
+              <option value="B.Sc">B.Sc</option>
+              <option value="M.Sc">M.Sc</option>
+            </select>
+          </div>
+          <div class="form-group mui-form-group">
+            <label for="sal" class="mui-label">Salary</label>
+            <input type="number" min="0" max="999999" id="Sal" name="sal" class="mui-input" />
+          </div>
+          <footer class="mui-modal-footer">
+            <input type="submit" id="submit" value="Submit" class="mui-button mui-button--primary" />
+            <input type="reset" id="rst" value="Reset" class="mui-button mui-button--secondary" />
+          </footer>
+        </form>
       </div>
     </div>
 
