@@ -6,8 +6,31 @@ const formModal = document.getElementById("formModal");
 let rowToDelete = null;
 let employees = [];
 let currentPage = 1;
-const rowsPerPage = 3;
+let defValue = 3;
+let rowsPerPage;
 let editingIndex = null;
+
+// Dropdown for rows per page
+const rows = [3, 5, 10];
+function createRowsPerPage(options, defaultvalue) {
+  const select = document.createElement("select");
+  select.id = "rowsPerPage";
+  options.forEach((value) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    if (value === defaultvalue) option.selected = true;
+    select.appendChild(option);
+  });
+  select.classList.add("pagination-dropdown");
+  select.addEventListener("change", function () {
+    rowsPerPage = parseInt(this.value, 10);
+    currentPage = 1;
+    renderTable();
+    renderPagination();
+  });
+  return select;
+}
 
 // Modal utility
 function showModal({ title, messages, buttonText, onButtonClick }) {
@@ -15,28 +38,23 @@ function showModal({ title, messages, buttonText, onButtonClick }) {
   modal.style.display = "block";
   modal.querySelector("h2").textContent = title;
   modal.querySelector("p").innerHTML = Array.isArray(messages)
-    ? messages.map(msg => `• ${msg}`).join("<br>")
+    ? messages.map((msg) => `• ${msg}`).join("<br>")
     : messages;
   const modalBtn = modal.querySelector(".modal-content button");
   modalBtn.textContent = buttonText;
-  modalBtn.onclick = function() {
+  modalBtn.onclick = function () {
     modal.style.display = "none";
     if (onButtonClick) onButtonClick();
   };
 }
 
 // Form Modal control functions
-function openFormModal(){
-  formModal.style.display='block';
-
-  // Reset form when opening for new entry
-  if(editingIndex == null) {
-    dataForm.reset();
-  }
+function openFormModal() {
+  formModal.style.display = "block";
+  if (editingIndex == null) dataForm.reset();
 }
-
-function closeFormModal(){
-  formModal.style.display='none';
+function closeFormModal() {
+  formModal.style.display = "none";
   editingIndex = null;
 }
 
@@ -44,29 +62,30 @@ function closeFormModal(){
 function deleteRow(deleteButton) {
   const row = deleteButton.closest("tr");
   if (row) {
-    const index = parseInt(row.getAttribute('data-index'));
+    const index = parseInt(row.getAttribute("data-index"));
     rowToDelete = index;
     closeFormModal();
     showModal({
       title: "Warning",
       messages: "Do you really want to delete the entry?",
       buttonText: "Delete",
-      onButtonClick: function() {
+      onButtonClick: function () {
         if (rowToDelete !== null) {
           employees.splice(rowToDelete, 1);
-          if (employees.length % rowsPerPage === 0 && currentPage > 1) currentPage--;
+          if (employees.length % rowsPerPage === 0 && currentPage > 1)
+            currentPage--;
           renderTable();
           renderPagination();
         }
         rowToDelete = null;
-      }
+      },
     });
   }
 }
 
 // Modal close handlers
-document.querySelectorAll(".close-btn").forEach(function(btn) {
-  btn.addEventListener("click", function() {
+document.querySelectorAll(".close-btn").forEach(function (btn) {
+  btn.addEventListener("click", function () {
     const modal = this.closest(".modal");
     modal.style.display = "none";
     rowToDelete = null;
@@ -74,13 +93,9 @@ document.querySelectorAll(".close-btn").forEach(function(btn) {
       editingIndex = null;
       dataForm.reset();
     }
-    else{
-      rowToDelete = null;
-    }
   });
 });
-
-window.onclick = function(event) {
+window.onclick = function (event) {
   const modal = document.getElementById("myModal");
   const formModal = document.getElementById("formModal");
   if (event.target === modal) {
@@ -96,7 +111,7 @@ window.onclick = function(event) {
 // Edit row
 function editRow(editButton) {
   const row = editButton.closest("tr");
-  const index = parseInt(row.getAttribute('data-index'));
+  const index = parseInt(row.getAttribute("data-index"));
   const emp = employees[index];
   document.getElementById("EmpID").value = emp.empID;
   document.getElementById("Name").value = emp.name;
@@ -129,8 +144,6 @@ function formatDateBritish(dateStr) {
 function formSubmit(event) {
   event.preventDefault();
   const errmsg = [];
-
-  // Gather form values
   const eEmpID = document.getElementById("EmpID").value.trim();
   const eName = document.getElementById("Name").value.trim();
   const eDOB = document.getElementById("DOB").value;
@@ -156,7 +169,7 @@ function formSubmit(event) {
     showModal({
       title: "Validation Error",
       messages: errmsg,
-      buttonText: "Close"
+      buttonText: "Close",
     });
     return;
   }
@@ -174,7 +187,7 @@ function formSubmit(event) {
     showModal({
       title: "Duplicate EmpID",
       messages: ["This EmpID already exists in the table."],
-      buttonText: "Close"
+      buttonText: "Close",
     });
     return;
   }
@@ -183,13 +196,10 @@ function formSubmit(event) {
     showModal({
       title: "Redundant Entry",
       messages: ["An entry with the same Name and DOB already exists."],
-      buttonText: "Close"
+      buttonText: "Close",
     });
     return;
   }
-
-  // Format DOB for display
-  // const formattedDOB = formatDateBritish(eDOB);
 
   if (editingIndex !== null) {
     employees[editingIndex] = {
@@ -198,7 +208,7 @@ function formSubmit(event) {
       dob: eDOB,
       age: eAge,
       course: ecourse,
-      salary: eSal
+      salary: eSal,
     };
     editingIndex = null;
   } else {
@@ -208,14 +218,12 @@ function formSubmit(event) {
       dob: eDOB,
       age: eAge,
       course: ecourse,
-      salary: eSal
+      salary: eSal,
     });
   }
   closeFormModal();
   renderTable();
   renderPagination();
-  // Removed automatic reset to allow manual reset by user
-  // dataForm.reset();
 }
 
 // Render table for current page
@@ -223,17 +231,24 @@ function renderTable() {
   const start = (currentPage - 1) * rowsPerPage;
   const end = start + rowsPerPage;
   const pageData = employees.slice(start, end);
-  tableBody.innerHTML = '';
+  tableBody.innerHTML = "";
   pageData.forEach((emp, index) => {
-    const row = document.createElement('tr');
-    row.setAttribute('data-index', start + index);
-    [emp.empID, emp.name, formatDateBritish(emp.dob), emp.age, emp.course, emp.salary].forEach(val => {
-      const cell = document.createElement('td');
+    const row = document.createElement("tr");
+    row.setAttribute("data-index", start + index);
+    [
+      emp.empID,
+      emp.name,
+      formatDateBritish(emp.dob),
+      emp.age,
+      emp.course,
+      emp.salary,
+    ].forEach((val) => {
+      const cell = document.createElement("td");
       cell.textContent = val;
       row.appendChild(cell);
     });
-    const actionCell = document.createElement('td');
-    actionCell.className = 'action-buttons';
+    const actionCell = document.createElement("td");
+    actionCell.className = "action-buttons";
     actionCell.innerHTML = `<button class="edit-btn">Edit</button><button class="delete-btn">Delete</button>`;
     row.appendChild(actionCell);
     tableBody.appendChild(row);
@@ -243,32 +258,56 @@ function renderTable() {
 // Render pagination controls
 function renderPagination() {
   const totalPages = Math.ceil(employees.length / rowsPerPage);
-  const pagination = document.getElementById('pagination-controls');
-  pagination.innerHTML = '';
-  if (totalPages <= 1) return;
+  const pagination = document.getElementById("pagination-controls");
+  pagination.innerHTML = "";
 
-  // Previous button
-  const prevBtn = document.createElement('button');
-  prevBtn.textContent = 'Previous';
-  prevBtn.disabled = currentPage === 1;
-  prevBtn.onclick = () => { currentPage--; renderTable(); renderPagination(); };
-  pagination.appendChild(prevBtn);
+  // Dropdown for rows per page
+  const dropdown = createRowsPerPage(rows, rowsPerPage || defValue);
 
-  // Page numbers
-  for (let i = 1; i <= totalPages; i++) {
-    const btn = document.createElement('button');
-    btn.textContent = i;
-    btn.classList.toggle('active', i === currentPage);
-    btn.onclick = () => { currentPage = i; renderTable(); renderPagination(); };
-    pagination.appendChild(btn);
+  // Only show dropdown if pagination is needed
+  if (totalPages > 1) {
+    dropdown.style.display = "inline-block";
+    pagination.appendChild(dropdown);
+
+    // Previous button
+    const prevBtn = document.createElement("button");
+    prevBtn.textContent = "Previous";
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.onclick = () => {
+      currentPage--;
+      renderTable();
+      renderPagination();
+    };
+    pagination.appendChild(prevBtn);
+
+    // Page numbers
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      btn.classList.toggle("active", i === currentPage);
+      btn.onclick = () => {
+        currentPage = i;
+        renderTable();
+        renderPagination();
+      };
+      pagination.appendChild(btn);
+    }
+
+    // Next button
+    const nextBtn = document.createElement("button");
+    nextBtn.textContent = "Next";
+    nextBtn.disabled = currentPage === totalPages;
+    nextBtn.onclick = () => {
+      currentPage++;
+      renderTable();
+      renderPagination();
+    };
+    pagination.appendChild(nextBtn);
+  } else {
+    // Hide dropdown if only one page
+    dropdown.style.display = "none";
+    pagination.appendChild(dropdown);
   }
-
-  // Next button
-  const nextBtn = document.createElement('button');
-  nextBtn.textContent = 'Next';
-  nextBtn.disabled = currentPage === totalPages;
-  nextBtn.onclick = () => { currentPage++; renderTable(); renderPagination(); };
-  pagination.appendChild(nextBtn);
 }
 
 // Table row action handler
@@ -281,29 +320,18 @@ tableBody.addEventListener("click", function (e) {
   }
 });
 
-
-
 // Initialize on page load
-document.addEventListener('DOMContentLoaded', function() {
-    const formModal = document.getElementById('formModal');
-    const tableContainer = document.querySelector('.table-container');
-
-    // Initially hide the form modal
-    formModal.style.display = 'none';
-
-    // Add raised class to table container after delay for animation
-    setTimeout(() => {
-        tableContainer.classList.add('raised');
-    }, 600); // Adjusted delay for smoother animation
-    renderTable();
-    renderPagination();
+document.addEventListener("DOMContentLoaded", function () {
+  rowsPerPage = defValue;
+  renderTable();
+  renderPagination();
 });
 
 // Form submit event
 dataForm.addEventListener("submit", formSubmit);
 
 // Reset button handler
-resetBtn.addEventListener("click", function() {
+resetBtn.addEventListener("click", function () {
   dataForm.reset();
   editingIndex = null;
 });
