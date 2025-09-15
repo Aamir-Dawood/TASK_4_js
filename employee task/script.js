@@ -10,8 +10,9 @@ let defValue = 3;
 let rowsPerPage;
 let editingIndex = null;
 
-const rows = [3, 5, 10];
+const rows = [3, 5, 10, "All"];
 let rowsPerPageDropdown;
+let showAllRows = false;
 
 function createRowsPerPage(options, defaultvalue) {
   const select = document.createElement("select");
@@ -31,20 +32,27 @@ function setupRowsPerPageDropdown() {
   // Create a container for the rows selector
   const rowsSelectorContainer = document.createElement("div");
   rowsSelectorContainer.className = "rows-per-page-container";
-  rowsSelectorContainer.innerHTML = '<label for="rowsPerPage">Rows per page:</label>';
-  
+  rowsSelectorContainer.innerHTML =
+    '<label for="rowsPerPage">Rows per page:</label>';
+
   // Create the dropdown
   rowsPerPageDropdown = createRowsPerPage(rows, rowsPerPage || defValue);
   rowsPerPageDropdown.addEventListener("change", function () {
-    rowsPerPage = parseInt(this.value, 10);
+    if (this.value === "All") {
+      showAllRows = true;
+      rowsPerPage = employees.length;
+    } else {
+      showAllRows = false;
+      rowsPerPage = parseInt(this.value, 10);
+    }
     currentPage = 1;
     renderTable();
     renderPagination();
   });
-  
+
   // Add the dropdown to the container
   rowsSelectorContainer.appendChild(rowsPerPageDropdown);
-  
+
   // Insert the container after the table but before pagination
   const table = document.querySelector("table");
   table.parentNode.insertBefore(rowsSelectorContainer, table.nextSibling);
@@ -90,8 +98,11 @@ function deleteRow(deleteButton) {
       onButtonClick: function () {
         if (rowToDelete !== null) {
           employees.splice(rowToDelete, 1);
-          if (employees.length % rowsPerPage === 0 && currentPage > 1)
+          if (showAllRows) {
+            rowsPerPage = employees.length;
+          } else if (employees.length % rowsPerPage === 0 && currentPage > 1) {
             currentPage--;
+          }
           renderTable();
           renderPagination();
         }
@@ -239,6 +250,9 @@ function formSubmit(event) {
       salary: eSal,
     });
   }
+  if (showAllRows) {
+    rowsPerPage = employees.length;
+  }
   closeFormModal();
   renderTable();
   renderPagination();
@@ -246,9 +260,16 @@ function formSubmit(event) {
 
 // Render table for current page
 function renderTable() {
-  const start = (currentPage - 1) * rowsPerPage;
-  const end = start + rowsPerPage;
-  const pageData = employees.slice(start, end);
+  let start, end, pageData;
+  if (showAllRows) {
+    start = 0;
+    end = employees.length;
+    pageData = employees.slice(start, end);
+  } else {
+    start = (currentPage - 1) * rowsPerPage;
+    end = start + rowsPerPage;
+    pageData = employees.slice(start, end);
+  }
   tableBody.innerHTML = "";
   pageData.forEach((emp, index) => {
     const row = document.createElement("tr");
@@ -274,14 +295,14 @@ function renderTable() {
 }
 
 function renderPagination() {
-  const totalPages = Math.ceil(employees.length / rowsPerPage);
+  const totalPages = showAllRows ? 1 : Math.ceil(employees.length / rowsPerPage);
   const pagination = document.getElementById("pagination-controls");
-  
+
   // Clear all buttons
-  pagination.innerHTML = '';
-  
+  pagination.innerHTML = "";
+
   // Only show pagination buttons if more than 1 page
-  if (totalPages > 1) {
+  if (totalPages > 1 && !showAllRows) {
     // Previous button
     const prevBtn = document.createElement("button");
     prevBtn.textContent = "Previous";
@@ -330,6 +351,9 @@ tableBody.addEventListener("click", function (e) {
 });
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Initialize showAllRows flag
+  // showAllRows = false;
+
   rowsPerPage = defValue;
   renderTable();
   setupRowsPerPageDropdown();
