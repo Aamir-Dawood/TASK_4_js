@@ -10,8 +10,9 @@ let defValue = 3;
 let rowsPerPage;
 let editingIndex = null;
 
-// Dropdown for rows per page
 const rows = [3, 5, 10];
+let rowsPerPageDropdown;
+
 function createRowsPerPage(options, defaultvalue) {
   const select = document.createElement("select");
   select.id = "rowsPerPage";
@@ -23,13 +24,30 @@ function createRowsPerPage(options, defaultvalue) {
     select.appendChild(option);
   });
   select.classList.add("pagination-dropdown");
-  select.addEventListener("change", function () {
+  return select;
+}
+
+function setupRowsPerPageDropdown() {
+  // Create a container for the rows selector
+  const rowsSelectorContainer = document.createElement("div");
+  rowsSelectorContainer.className = "rows-per-page-container";
+  rowsSelectorContainer.innerHTML = '<label for="rowsPerPage">Rows per page:</label>';
+  
+  // Create the dropdown
+  rowsPerPageDropdown = createRowsPerPage(rows, rowsPerPage || defValue);
+  rowsPerPageDropdown.addEventListener("change", function () {
     rowsPerPage = parseInt(this.value, 10);
     currentPage = 1;
     renderTable();
     renderPagination();
   });
-  return select;
+  
+  // Add the dropdown to the container
+  rowsSelectorContainer.appendChild(rowsPerPageDropdown);
+  
+  // Insert the container after the table but before pagination
+  const table = document.querySelector("table");
+  table.parentNode.insertBefore(rowsSelectorContainer, table.nextSibling);
 }
 
 // Modal utility
@@ -255,20 +273,15 @@ function renderTable() {
   });
 }
 
-// Render pagination controls
 function renderPagination() {
   const totalPages = Math.ceil(employees.length / rowsPerPage);
   const pagination = document.getElementById("pagination-controls");
-  pagination.innerHTML = "";
-
-  // Dropdown for rows per page
-  const dropdown = createRowsPerPage(rows, rowsPerPage || defValue);
-
-  // Only show dropdown if pagination is needed
+  
+  // Clear all buttons
+  pagination.innerHTML = '';
+  
+  // Only show pagination buttons if more than 1 page
   if (totalPages > 1) {
-    dropdown.style.display = "inline-block";
-    pagination.appendChild(dropdown);
-
     // Previous button
     const prevBtn = document.createElement("button");
     prevBtn.textContent = "Previous";
@@ -303,10 +316,6 @@ function renderPagination() {
       renderPagination();
     };
     pagination.appendChild(nextBtn);
-  } else {
-    // Hide dropdown if only one page
-    dropdown.style.display = "none";
-    pagination.appendChild(dropdown);
   }
 }
 
@@ -320,10 +329,10 @@ tableBody.addEventListener("click", function (e) {
   }
 });
 
-// Initialize on page load
 document.addEventListener("DOMContentLoaded", function () {
   rowsPerPage = defValue;
   renderTable();
+  setupRowsPerPageDropdown();
   renderPagination();
 });
 

@@ -395,8 +395,9 @@ td {
     align-items: center;
     justify-content: center;
     gap: 8px;
-    margin: 20px auto;
+    margin: 15px auto;
     flex-wrap: wrap;
+    width: 90%;
 }
 
 #pagination-controls button {
@@ -418,12 +419,15 @@ td {
     color: #888;
     cursor: not-allowed;
 }
+#pagination-controls button:hover:not(:disabled) {
+  background: #2576a8;
+}
 
 .pagination-dropdown {
     padding: 6px 10px;
     border-radius: 5px;
     border: 1px solid #3396D3;
-    font-size: 1em;
+    font-size: 0.9em;
     margin-right: 12px;
     background: #f8faff;
     color: #2576a8;
@@ -433,6 +437,23 @@ td {
 }
 .pagination-dropdown:focus {
     border-color: #2576a8;
+    outline: none;
+}
+/* Rows per page selector styles */
+.rows-per-page-container {
+  display: flex;
+  align-items: center;
+  margin: 15px 5% 5px;
+  justify-content: flex-end;
+  width: 90%;
+  border-radius: 5px;
+}
+
+.rows-per-page-container label {
+  margin-right: 10px;
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 0.9rem;
 }
 
 @media (max-width: 600px) {
@@ -475,4 +496,25 @@ td {
         flex-direction: column;
         gap: 8px;
     }
+    .rows-per-page-container {
+    justify-content: center;
+    margin: 10px auto;
+  }
+  .rows-per-page-container label {
+    font-size: 0.8rem;
+  }
+  
+  .pagination-dropdown {
+    padding: 5px 8px;
+    font-size: 0.8rem;
+  }
+  
+  #pagination-controls {
+    gap: 5px;
+  }
+  
+  #pagination-controls button {
+    padding: 5px 10px;
+    font-size: 0.8rem;
+  }
 }
